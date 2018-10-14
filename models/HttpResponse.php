@@ -1,4 +1,4 @@
-<?php 
+<?php
 class HttpResponse {
   public function badRequest($message) {
     http_response_code(400);
@@ -43,13 +43,13 @@ class HttpResponse {
     echo json_encode([
       "date_time" => date("d/m/Y h:i:s:a"),
       "version" => "1.0.0",
-      "calls_made" => $resultsInfo['calls_made'],
-      "calls_remaining" => $resultsInfo['plan'] === "unlimited" ? "unlimited" : 1000 -$resultsInfo['calls_made'],
-      "date_time_to_refresh_calls" => date("d/m/Y h:i:s:a", date(time()) + $resultsInfo['time_end']- date(time())),
+      //"calls_made" => $resultsInfo['calls_made'],
+      //"calls_remaining" => $resultsInfo['plan'] === "unlimited" ? "unlimited" : 1000 -$resultsInfo['calls_made'],
+      //"date_time_to_refresh_calls" => date("d/m/Y h:i:s:a", date(time()) + $resultsInfo['time_end']- date(time())),
       "data" => $resultsData,
     ]);
   }
 
 
-  
+
 }
