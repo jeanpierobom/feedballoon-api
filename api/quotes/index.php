@@ -77,10 +77,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
       $http->OK($resultsInfo, $results);
     }
 } else if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
-  $quoteReceived = json_decode(file_get_contents("php://input"));
+  //$quoteReceived = json_decode(file_get_contents("php://input"));
+  $putdata = "a";
+  $decoded_input = json_decode(file_get_contents("php://input"), true);
+  parse_str($decoded_input, $putdata);
+
   if (!$quoteReceived->id) {
     // POST ID NOT PROVIDED BAD REQUEST
-    $http->badRequest("Please an id is required to make a PUT request");
+    $http->badRequest("Please an id is required to make a PUT request: " . $putdata);
     exit();
   }
   $query = "SELECT * FROM quotes WHERE id = ?";

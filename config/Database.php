@@ -102,4 +102,79 @@ class Database {
     $stmt = $this->pdo->prepare($query);
     $stmt->execute([$firstName, $lastName, $password, $username]);
   }
+
+  //---------------------------------
+  public function fetchOneUserByUsername($username) {
+    $query = "SELECT * FROM users WHERE username = ?";
+    return $this->fetchOne($query, $username);
+  }
+
+  public function fetchAllFeedbacks($userId) {
+    $query  = "SELECT ";
+    $query .= "  f.id, ";
+    $query .= "  f.from_user_id, ";
+    $query .= "  CONCAT(user_from.firstname, ' ', user_from.lastname) AS user_from_name, ";
+    $query .= "  f.to_user_id, ";
+    $query .= "  CONCAT(user_to.firstname, ' ', user_to.lastname) AS user_to_name, ";
+    $query .= "  f.message, ";
+    $query .= "  f.date ";
+    $query .= "FROM feedback AS f ";
+    $query .= "INNER JOIN users AS user_from ON user_from.id = f.from_user_id ";
+    $query .= "INNER JOIN users AS user_to ON user_to.id = f.to_user_id ";
+    $query .= "WHERE (f.from_user_id = ? OR f.to_user_id = ?) ";
+    $query .= "ORDER BY date DESC ";
+
+    $stmt = $this->pdo->prepare($query);
+    $stmt->execute([$userId, $userId]);
+    $rowCount = $stmt->rowCount();
+    if ($rowCount <= 0) {
+      return 0;
+    }
+    else {
+      return $stmt->fetchAll();
+    }
+  }
+
+  public function fetchOneFeedback($id, $userId) {
+    $query  = "SELECT ";
+    $query .= "  f.id, ";
+    $query .= "  f.from_user_id, ";
+    $query .= "  CONCAT(user_from.firstname, ' ', user_from.lastname) AS user_from_name, ";
+    $query .= "  f.to_user_id, ";
+    $query .= "  CONCAT(user_to.firstname, ' ', user_to.lastname) AS user_to_name, ";
+    $query .= "  f.message, ";
+    $query .= "  f.date ";
+    $query .= "FROM feedback AS f ";
+    $query .= "INNER JOIN users AS user_from ON user_from.id = f.from_user_id ";
+    $query .= "INNER JOIN users AS user_to ON user_to.id = f.to_user_id ";
+    $query .= "WHERE f.id = ? AND (f.from_user_id = ? OR f.to_user_id = ?) ";
+    $query .= "ORDER BY date DESC ";
+    $stmt = $this->pdo->prepare($query);
+    $stmt->execute([$id, $userId, $userId]);
+    $rowCount = $stmt->rowCount();
+    if ($rowCount <= 0) {
+      return 0;
+    }else {
+      return $stmt->fetch();
+    }
+  }
+
+  public function insertFeedback($fromUserId, $toUserId, $message) {
+    $query = "INSERT INTO feedback (from_user_id, to_user_id, message, date) VALUES (?, ?, ?, now())";
+    $stmt = $this->pdo->prepare($query);
+    $stmt->execute([$fromUserId, $toUserId, $message]);
+  }
+
+  public function updateFeedback($message, $id) {
+    $query = "UPDATE feedback SET message = ? WHERE id = ?";
+    $stmt = $this->pdo->prepare($query);
+    $stmt->execute([$message, $id]);
+  }
+
+  public function deleteFeedback($id) {
+    $query = "DELETE FROM feedback WHERE id = ?";
+    $stmt = $this->pdo->prepare($query);
+    $stmt->execute([$id]);
+  }
+
 }

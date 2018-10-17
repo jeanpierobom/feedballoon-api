@@ -9,6 +9,7 @@ class HttpResponse {
       "message" => $message,
     ]);
   }
+  //TODO rename this method
   public function paymentRequired() {
     http_response_code(402);
     echo json_encode([

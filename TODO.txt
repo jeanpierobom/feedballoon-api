@@ -1,3 +1,7 @@
 - Forgot password
 
 - Upload photo
+
+- Rename "payment" method
+
+- MD5 password
