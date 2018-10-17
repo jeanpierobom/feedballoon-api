@@ -7,6 +7,41 @@ class Group {
     }
 
     public function fetchAllGroups() {
+      return $this->db->fetchAllGroups();
+    }
+
+    public function fetchAllGroupsByUser($userId) {
+      return $this->db->fetchAllGroupsByUser($userId);
+    }
+
+    public function fetchOneGroup($id) {
+      if (isset($id)) {
+        return $this->db->fetchOneGroup($id);
+      } else {
+        return -1;
+      }
+    }
+
+    public function insertGroup($parameters) {
+      if (isset($parameters->name) && isset($parameters->private)) {
+        $this->db->insertGroup($parameters->name, $parameters->private);
+        return $parameters;
+      } else {
+        return -1;
+      }
+    }
+
+    public function updateGroup($parameters) {
+      if (isset($parameters['name']) && isset($parameters['private'])) {
+        $this->db->updateGroup($parameters['name'], $parameters['private'], $parameters['id']);
+        return $parameters;
+      } else {
+        return -1;
+      }
+    }
+
+    /*
+    public function fetchAllGroups() {
         $query = "SELECT id, name, private FROM groups ORDER BY name";
         return $this->db->fetchAll($query);
     }
@@ -55,5 +90,5 @@ class Group {
             "message" => "Group with the id $id was successfully deleted",
         ];
     }
-
+    */
 }

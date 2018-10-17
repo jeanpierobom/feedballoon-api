@@ -5,3 +5,13 @@
 - Rename "payment" method
 
 - MD5 password
+
+- Group admins
+
+- Service to Get all members from one group
+
+- Service to add members to a group
+
+- Service to remove members to a group
+
+- Only admins can update a group

@@ -86,10 +86,10 @@ class Database {
     $stmt = $this->pdo->prepare($query);
     $stmt->execute([$body, $user_id, $category_id, $date]);
   }
-  public function insertOneGroup($query, $name, $private) {
-    $stmt = $this->pdo->prepare($query);
-    $stmt->execute([$name, $private]);
-  }
+  // public function insertOneGroup($query, $name, $private) {
+  //   $stmt = $this->pdo->prepare($query);
+  //   $stmt->execute([$name, $private]);
+  // }
   public function updateOne($query, $body, $category_id, $id) {
     $stmt = $this->pdo->prepare($query);
     $stmt->execute([$body, $category_id, $id]);
@@ -109,6 +109,10 @@ class Database {
     return $this->fetchOne($query, $username);
   }
 
+
+  //----------------------------------------------------------------------------
+  // Feedback methods
+  //----------------------------------------------------------------------------
   public function fetchAllFeedbacks($userId) {
     $query  = "SELECT ";
     $query .= "  f.id, ";
@@ -175,6 +179,36 @@ class Database {
     $query = "DELETE FROM feedback WHERE id = ?";
     $stmt = $this->pdo->prepare($query);
     $stmt->execute([$id]);
+  }
+
+  //----------------------------------------------------------------------------
+  // Group methods
+  //----------------------------------------------------------------------------
+  public function fetchAllGroups() {
+    $query  = "SELECT id, name, private FROM groups ORDER BY name";
+    return $this->fetchAll($query);
+  }
+
+  public function fetchAllGroupsByUser($userId) {
+    //TODO filter by user
+    return $this->fetchAllGroups();
+  }
+
+  public function fetchOneGroup($id) {
+    $query = "SELECT id, name, private FROM groups WHERE id = ?";
+    return $this->fetchOne($query, $id);
+  }
+
+  public function insertGroup($name, $private) {
+    $query = "INSERT INTO groups (name, private) VALUES (?, ?)";
+    $stmt = $this->pdo->prepare($query);
+    $stmt->execute([$name, $private]);
+  }
+
+  public function updateGroup($name, $private, $id) {
+    $query = "UPDATE groups SET name = ?, private = ? WHERE id = ?";
+    $stmt = $this->pdo->prepare($query);
+    $stmt->execute([$name, $private, $id]);
   }
 
 }
