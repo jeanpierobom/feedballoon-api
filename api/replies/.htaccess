@@ -1,5 +1,5 @@
 RewriteEngine on
-RewriteRule ^name/([A-Za-z0-9]+)$ index.php?name=$1
-RewriteRule ^name index.php
+RewriteRule ^feedback/([A-Za-z0-9]+)$ index.php?feedbackId=$1
+RewriteRule ^feedback index.php
 RewriteRule ^([A-Za-z0-9]+)$ index.php?id=$1
 RewriteRule ^([^/.]+)/?$ $1.php

@@ -14,6 +14,10 @@ class Group {
       return $this->db->fetchAllGroupsByUser($userId);
     }
 
+    public function fetchGroupsByName($name) {
+      return $this->db->fetchGroupsByName($name);
+    }
+
     public function fetchOneGroup($id) {
       if (isset($id)) {
         return $this->db->fetchOneGroup($id);

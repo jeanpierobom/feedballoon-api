@@ -15,3 +15,5 @@
 - Service to remove members to a group
 
 - Only admins can update a group
+
+- Validate FK constraints in all POST and PUT methods

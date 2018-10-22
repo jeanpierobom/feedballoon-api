@@ -194,6 +194,18 @@ class Database {
     return $this->fetchAllGroups();
   }
 
+  public function fetchGroupsByName($name) {
+    $query  = "SELECT id, name, private FROM groups WHERE name LIKE ? ORDER BY name";
+    $stmt = $this->pdo->prepare($query);
+    $stmt->execute(["%".$name."%"]);
+    $rowCount = $stmt->rowCount();
+    if ($rowCount <= 0) {
+      return 0;
+    } else {
+      return $stmt->fetchAll();
+    }
+  }
+
   public function fetchOneGroup($id) {
     $query = "SELECT id, name, private FROM groups WHERE id = ?";
     return $this->fetchOne($query, $id);
@@ -209,6 +221,38 @@ class Database {
     $query = "UPDATE groups SET name = ?, private = ? WHERE id = ?";
     $stmt = $this->pdo->prepare($query);
     $stmt->execute([$name, $private, $id]);
+  }
+
+  //----------------------------------------------------------------------------
+  // Reply methods
+  //----------------------------------------------------------------------------
+  public function fetchAllRepliesByFeedback($feedbackId) {
+    $query  = "SELECT id, feedback_id, user_id, message, date FROM feedback_reply WHERE feedback_id = ? ORDER BY date";
+    $stmt = $this->pdo->prepare($query);
+    $stmt->execute([$feedbackId]);
+    $rowCount = $stmt->rowCount();
+    if ($rowCount <= 0) {
+      return 0;
+    } else {
+      return $stmt->fetchAll();
+    }
+  }
+
+  public function fetchOneReply($id) {
+    $query  = "SELECT id, feedback_id, user_id, message, date FROM feedback_reply WHERE id = ?";
+    return $this->fetchOne($query, $id);
+  }
+
+  public function insertReply($feedbackId, $userId, $message) {
+    $query = "INSERT INTO feedback_reply (feedback_id, user_id, message, date) VALUES (?, ?, ?, now())";
+    $stmt = $this->pdo->prepare($query);
+    $stmt->execute([$feedbackId, $userId, $message]);
+  }
+
+  public function updateReply($message, $id) {
+    $query = "UPDATE feedback_reply SET message = ? WHERE id = ?";
+    $stmt = $this->pdo->prepare($query);
+    $stmt->execute([$message, $id]);
   }
 
 }

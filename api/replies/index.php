@@ -20,12 +20,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 }
 
 require_once "../../config/Database.php";
-require_once "../../models/Group.php";
+require_once "../../models/Reply.php";
 require_once "../../models/HttpResponse.php";
 require_once "../../models/Authenticate.php";
 
 $db = new Database();
-$group = new Group($db);
+$reply = new Reply($db);
 $auth = new Authenticate($db);
 $http = new HttpResponse();
 
@@ -55,28 +55,23 @@ switch ($_SERVER['REQUEST_METHOD']) {
 
     // Filter by id
     if (isset($_GET['id']) && !filter_var($_GET['id'], FILTER_VALIDATE_INT)) {
-      $http->badRequest("Only a valid integer is allowed to fetch a single group");
+      $http->badRequest("Only a valid integer is allowed to fetch a single reply");
       die();
     }
 
-    // Fetch one group by ID, or all if there is no ID
-    if (isset($_GET['id'])) { // Filter by ID
-      $resultsData = $group->fetchOneGroup($_GET['id']);
+    // Fetch one reply by ID or by feedback ID
+    $resultsData = 0;
+    if (isset($_GET['id'])) { //Filter by ID
+      $resultsData = $reply->fetchOneReply($_GET['id']);
     }
 
-    else if (isset($_GET['name'])) { // Filter by name
-      $resultsData = $group->fetchGroupsByName($_GET['name']);
+    else if (isset($_GET['feedbackId'])) { //Filter by feedback ID
+      $resultsData = $reply->fetchAllRepliesByFeedback($_GET['feedbackId']);
     }
-
-    else { // Fetch all
-      $resultsData = $group->fetchAllGroups();
-    }
-
-    //$resultsData = isset($_GET['id']) ? $group->fetchOneGroup($_GET['id']) : $group->fetchAllGroups();
 
     $resultsInfo = $db->executeCall($username, 1000, 86400);
     if ($resultsData === 0) {
-      $message = "No group ";
+      $message = "No reply ";
       $message .= isset($_GET['id']) ? "with the id " . $_GET['id'] : "";
       $message .= " was found";
       $http->notFound($message);
@@ -89,11 +84,11 @@ switch ($_SERVER['REQUEST_METHOD']) {
 
   case "POST":
 
-    $groupReceived = json_decode($_POST['body']);
-    $results = $group->insertGroup($groupReceived);
+    $replyReceived = json_decode($_POST['body']);
+    $results = $reply->insertReply($replyReceived);
     $resultsInfo = $db->executeCall($username, 1000, 86400);
     if ($results === -1) {
-      $http->badRequest("A valid JSON of 'name' and 'private' fields is required");
+      $http->badRequest("A valid JSON of 'feedbackId', 'userId' and 'message' fields is required ");
     }else if($resultsInfo === -1) {
       $http->paymentRequired();
     }else {
@@ -101,26 +96,25 @@ switch ($_SERVER['REQUEST_METHOD']) {
     }
     break;
 
-  case "PUT":
+/*  case "PUT":
 
-    $groupReceived = json_decode(file_get_contents("php://input"));
-    if ($groupReceived->id <= 0) {
+    $feedbackReceived = json_decode(file_get_contents("php://input"));
+    if ($feedbackReceived->id <= 0) {
       $http->badRequest("Please an id is required to make a PUT request");
       exit();
     }
-    $results = $db->fetchOneGroup($groupReceived->id);
+    $results = $db->fetchOneFeedback($feedbackReceived->id);
     if ($results === 0) {
-      $http->notFound("Group with the id $groupReceived->id was not found");
-    } else if(false && $results['user_id'] !== $userId) {//TODO check if the user is an admin
-      $http->notAuthorized("You are not authorized to update this group (" . $results['user_id'] . ":" . $userId . ")");
+      $http->notFound("Feedback with the id $feedbackReceived->id was not found");
+    } else if($results['from_user_id'] !== $userId) {
+      $http->notAuthorized("You are not authorized to update this feedback (" . $results['from_user_id'] . ":" . $userId . ")");
     } else {
       $parameters = [
-        'id' => $groupReceived->id,
-        'name' => isset($groupReceived->name) ? $groupReceived->name : $results['name'],
-        'private' => isset($groupReceived->private) ? $groupReceived->private : $results['private']
+        'id' => $feedbackReceived->id,
+        'message' => isset($feedbackReceived->message) ? $feedbackReceived->message : $results['message'],
       ];
 
-      $resultsData = $group->updateGroup($parameters);
+      $resultsData = $feedback->updateFeedback($parameters);
       $resultsInfo = $db->executeCall($username, 1000, 86400);
 
       if ($resultsInfo === -1)  {
@@ -129,5 +123,33 @@ switch ($_SERVER['REQUEST_METHOD']) {
         $http->OK($resultsInfo, $resultsData);
       }
     }
+
     break;
+  case "DELETE":
+
+    $parameters = json_decode(file_get_contents("php://input"));
+    if (!$parameters->id) {
+      $http->badRequest("No id was provided");
+      exit();
+    }
+
+    $results = $db->fetchOneFeedback($parameters->id);
+    if ($results === 0) {
+      $http->notFound("Feedback with the id $parameters->id was not found");
+      exit();
+    }
+    if ($results['user_id'] !== $userId) {
+      $http->notAuthorized("You are not authorized to delete this feedback");
+    }else {
+      $resultsData = $user->deleteFeedback($parameters->id);
+      $resultsInfo = $db->executeCall($username, 1000, 86400);
+
+      if ($resultsInfo === -1) {
+        $http->paymentRequired();
+      }else {
+        $http->OK($resultsInfo, $resultsData);
+      }
+    }
+
+    break;*/
 }
