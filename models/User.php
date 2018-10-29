@@ -34,4 +34,8 @@ class User {
       return $this->db->fetchOne($query, $parameter);
   }
 
+  public function fetchUsersByNameOrEmail($parameter) {
+      return $this->db->fetchUsersByNameOrEmail($parameter);
+  }
+
 }
