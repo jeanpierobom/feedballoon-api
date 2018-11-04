@@ -98,7 +98,8 @@ class Database {
     $stmt = $this->pdo->prepare($query);
     $stmt->execute([$id]);
   }
-  public function insertUser($query, $firstName, $lastName, $password, $username) {
+  public function insertUser($firstName, $lastName, $password, $username) {
+    $query = "INSERT INTO users (firstName, lastName, username, password, plan, calls_made, time_start, time_end) VALUES (?, ?, ?, ?, 'unlimited', 0, 0, 0)";
     $stmt = $this->pdo->prepare($query);
     $stmt->execute([$firstName, $lastName, $password, $username]);
   }

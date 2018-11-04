@@ -38,13 +38,13 @@ $authResult = $auth->authenticate($username, $password);
 // Validate the authentication results
 if ($authResult > 0) {
   $userId = $authResult;
-} else { // Invalid authentication
+} else if ($_SERVER['REQUEST_METHOD'] != 'POST') { // Invalid authentication
   switch ($authResult) {
     case -1:
-      $http->notAuthorized("You must authenticate yourself before you can use our REST API services");
+      $http->notAuthorized($_SERVER['REQUEST_METHOD'] . "You must authenticate yourself before you can use our REST API services");
       break;
     case -2:
-      $http->notAuthorized("You provided wrong credentials");
+      $http->notAuthorized($_SERVER['REQUEST_METHOD'] . "You provided wrong credentials");
       break;
   }
   exit();
@@ -88,7 +88,7 @@ switch ($_SERVER['REQUEST_METHOD']) {
     $results = $user->insertUser($userReceived);
     $resultsInfo = $db->executeCall($username, 1000, 86400);
     if ($results === -1) {
-      $http->badRequest("A valid JSON of username, password... fields is required");
+      $http->badRequest($_POST['body'] . " - A valid JSON of username, password... fields is required");
     }else if($resultsInfo === -1) {
       $http->paymentRequired();
     }else {
