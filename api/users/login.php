@@ -19,7 +19,7 @@ if (!$_SERVER['REQUEST_METHOD'] === "POST") {
 }
 
 // User should inform their credentials
-if (!isset($_SESSION['PHP_AUTH_USER']) && !isset($_SERVER['PHP_AUTH_PW'])) {
+if (trim($_SERVER['PHP_AUTH_USER']) == '' || trim($_SERVER['PHP_AUTH_PW']) == '') {
   $http->notAuthorized("You must authenticate yourself before you can use our REST API services");
   exit();
 }
@@ -33,8 +33,8 @@ if ($results === 0 || $results['password'] !== $password) {
     $http->notAuthorized("You provided wrong credentials");
     exit();
 } else {
-    $user_id = $results['id'];
+    // The password doesn't need to be sent to the client
+    $results['password'] = '';
     $resultsInfo = $db->executeCall($username, 1000, 86400);
-    $results = $user_id;
     $http->OK($resultsInfo, $results);
 }
