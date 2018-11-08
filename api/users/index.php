@@ -84,16 +84,26 @@ switch ($_SERVER['REQUEST_METHOD']) {
 
   case "POST":
 
-    $userReceived = json_decode($_POST['body']);
-    $results = $user->insertUser($userReceived);
-    $resultsInfo = $db->executeCall($username, 1000, 86400);
-    if ($results === -1) {
-      $http->badRequest($_POST['body'] . " - A valid JSON of username, password... fields is required");
-    }else if($resultsInfo === -1) {
-      $http->paymentRequired();
-    }else {
-      $http->OK($resultsInfo, $results);
+    $userReceived = json_decode(file_get_contents("php://input"));
+
+    // Check if the user already exists
+    $existingUser = $db->fetchOneUserByUsername($userReceived->username);
+    if (!empty($existingUser)) {
+      $http->badRequest("This e-mail is already registered.");
+    } else {
+
+      //OK, it is a new user
+      $results = $user->insertUser($userReceived);
+      $resultsInfo = $db->executeCall($username, 1000, 86400);
+      if ($results === -1) {
+        $http->badRequest("A valid JSON user attributes is required.");
+      }else if($resultsInfo === -1) {
+        $http->paymentRequired();
+      }else {
+        $http->OK($resultsInfo, $results);
+      }
     }
+
     break;
 
   case "PUT":

@@ -7,12 +7,20 @@ class Feedback {
   }
 
   public function fetchAllFeedbacks($userId) {
-    return $this->db->fetchAllFeedbacks($userId);
+    $newResult = array();
+    $resultList = $this->db->fetchAllFeedbacks($userId);
+    foreach ($resultList as $currentFeedback) {
+      $currentFeedback["user_from_initials"] = $currentFeedback["user_from_firstname"][0] . $currentFeedback["user_from_lastname"][0];
+      $currentFeedback["user_to_initials"] = $currentFeedback["user_to_firstname"][0] . $currentFeedback["user_to_lastname"][0];
+      array_push($newResult, $currentFeedback);
+    }
+    return $newResult;
   }
 
   public function fetchOneFeedback($id, $userId) {
     if (isset($id)) {
-      return $this->db->fetchOneFeedback($id, $userId);
+      $resultFeedback = $this->db->fetchOneFeedback($id, $userId);
+      return $resultFeedback;
     } else {
       return -1;
     }

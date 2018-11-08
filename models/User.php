@@ -7,12 +7,13 @@ class User {
   }
 
   public function insertUser($parameters) {
-    if (isset($parameters->firstName) && isset($parameters->lastName) && isset($parameters->password)) {
+    if (isset($parameters->firstName) && isset($parameters->lastName) && isset($parameters->jobTitle) && isset($parameters->username) && isset($parameters->password)) {
       $firstName = $parameters->firstName;
       $lastName = $parameters->lastName;
+      $jobTitle = $parameters->jobTitle;
       $username =  $parameters->username;
       $password = $parameters->password;
-      $this->db->insertUser($firstName, $lastName, $username, $password);
+      $this->db->insertUser($firstName, $lastName, $jobTitle, $username, $password);
       return [
         "firstName" => $firstName,
         "lastName" => $lastName,

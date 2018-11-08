@@ -98,10 +98,10 @@ class Database {
     $stmt = $this->pdo->prepare($query);
     $stmt->execute([$id]);
   }
-  public function insertUser($firstName, $lastName, $password, $username) {
-    $query = "INSERT INTO users (firstName, lastName, username, password, plan, calls_made, time_start, time_end) VALUES (?, ?, ?, ?, 'unlimited', 0, 0, 0)";
+  public function insertUser($firstName, $lastName, $jobTitle, $username, $password) {
+    $query = "INSERT INTO users (firstName, lastName, job_title, username, password, plan, calls_made, time_start, time_end) VALUES (?, ?, ?, ?, ?, 'unlimited', 0, 0, 0)";
     $stmt = $this->pdo->prepare($query);
-    $stmt->execute([$firstName, $lastName, $password, $username]);
+    $stmt->execute([$firstName, $lastName, $jobTitle, $username, md5($password)]);
   }
 
   //---------------------------------
@@ -118,8 +118,12 @@ class Database {
     $query  = "SELECT ";
     $query .= "  f.id, ";
     $query .= "  f.from_user_id, ";
+    $query .= "  user_from.firstname AS user_from_firstname, ";
+    $query .= "  user_from.lastname AS user_from_lastname, ";
     $query .= "  CONCAT(user_from.firstname, ' ', user_from.lastname) AS user_from_name, ";
     $query .= "  f.to_user_id, ";
+    $query .= "  user_to.firstname AS user_to_firstname, ";
+    $query .= "  user_to.lastname AS user_to_lastname, ";
     $query .= "  CONCAT(user_to.firstname, ' ', user_to.lastname) AS user_to_name, ";
     $query .= "  f.message, ";
     $query .= "  f.date ";
