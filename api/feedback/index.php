@@ -76,11 +76,11 @@ switch ($_SERVER['REQUEST_METHOD']) {
 
   case "POST":
 
-    $feedbackReceived = json_decode($_POST['body']);
+    $feedbackReceived = json_decode(file_get_contents("php://input"));
     $results = $feedback->insertFeedback($feedbackReceived);
     $resultsInfo = $db->executeCall($username, 1000, 86400);
     if ($results === -1) {
-      $http->badRequest("A valid JSON of fromUserId, toUserId and message fields is required");
+      $http->badRequest("A valid JSON of fields is required");
     }else if($resultsInfo === -1) {
       $http->paymentRequired();
     }else {

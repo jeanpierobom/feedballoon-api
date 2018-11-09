@@ -7,7 +7,18 @@ class Group {
     }
 
     public function fetchAllGroups() {
-      return $this->db->fetchAllGroups();
+      $newResult = array();
+      $resultList = $this->db->fetchAllGroups();
+      foreach ($resultList as $currentGroup) {
+        $nameAsList = explode(" ", $currentGroup["name"]);
+        $currentGroup["name_initials"] = $nameAsList[0][0];
+        if (sizeof($nameAsList) > 0) {
+          $currentGroup["name_initials"] = $currentGroup["name_initials"] . $nameAsList[sizeof($nameAsList) - 1][0];
+        }
+        $currentGroup["name_initials"] = strtoupper($currentGroup["name_initials"]);
+        array_push($newResult, $currentGroup);
+      }
+      return $newResult;
     }
 
     public function fetchAllGroupsByUser($userId) {
@@ -28,7 +39,7 @@ class Group {
 
     public function insertGroup($parameters) {
       if (isset($parameters->name) && isset($parameters->private)) {
-        $this->db->insertGroup($parameters->name, $parameters->private);
+        $this->db->insertGroup($parameters->name, $parameters->description, $parameters->private);
         return $parameters;
       } else {
         return -1;

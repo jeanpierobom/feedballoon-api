@@ -28,6 +28,7 @@ ALTER TABLE `users` MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=
 CREATE TABLE `groups` (
   `id` int(11) NOT NULL,
   `name` varchar(100) NOT NULL,
+  `description` TEXT NULL,
   `private` TINYINT(1) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 

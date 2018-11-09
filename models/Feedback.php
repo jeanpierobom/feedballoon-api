@@ -12,6 +12,7 @@ class Feedback {
     foreach ($resultList as $currentFeedback) {
       $currentFeedback["user_from_initials"] = $currentFeedback["user_from_firstname"][0] . $currentFeedback["user_from_lastname"][0];
       $currentFeedback["user_to_initials"] = $currentFeedback["user_to_firstname"][0] . $currentFeedback["user_to_lastname"][0];
+      $currentFeedback["type"] = $currentFeedback["from_user_id"] == $userId ? "sent" : "received";
       array_push($newResult, $currentFeedback);
     }
     return $newResult;
@@ -20,6 +21,9 @@ class Feedback {
   public function fetchOneFeedback($id, $userId) {
     if (isset($id)) {
       $resultFeedback = $this->db->fetchOneFeedback($id, $userId);
+      $resultFeedback["user_from_initials"] = $resultFeedback["user_from_firstname"][0] . $resultFeedback["user_from_lastname"][0];
+      $resultFeedback["user_to_initials"] = $resultFeedback["user_to_firstname"][0] . $resultFeedback["user_to_lastname"][0];
+      $resultFeedback["type"] = $resultFeedback["from_user_id"] == $userId ? "sent" : "received";
       return $resultFeedback;
     } else {
       return -1;

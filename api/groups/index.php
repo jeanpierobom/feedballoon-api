@@ -89,11 +89,11 @@ switch ($_SERVER['REQUEST_METHOD']) {
 
   case "POST":
 
-    $groupReceived = json_decode($_POST['body']);
+    $groupReceived = json_decode(file_get_contents("php://input"));
     $results = $group->insertGroup($groupReceived);
     $resultsInfo = $db->executeCall($username, 1000, 86400);
     if ($results === -1) {
-      $http->badRequest("A valid JSON of 'name' and 'private' fields is required");
+      $http->badRequest("A valid JSON of fields is required");
     }else if($resultsInfo === -1) {
       $http->paymentRequired();
     }else {

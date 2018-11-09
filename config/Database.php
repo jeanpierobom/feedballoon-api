@@ -151,9 +151,16 @@ class Database {
     $query  = "SELECT ";
     $query .= "  f.id, ";
     $query .= "  f.from_user_id, ";
+    $query .= "  user_from.firstname AS user_from_firstname, ";
+    $query .= "  user_from.lastname AS user_from_lastname, ";
     $query .= "  CONCAT(user_from.firstname, ' ', user_from.lastname) AS user_from_name, ";
+    $query .= "  user_from.job_title AS user_from_job_title, ";
     $query .= "  f.to_user_id, ";
+    $query .= "  user_to.firstname AS user_to_firstname, ";
+    $query .= "  user_to.lastname AS user_to_lastname, ";
     $query .= "  CONCAT(user_to.firstname, ' ', user_to.lastname) AS user_to_name, ";
+    $query .= "  user_to.job_title AS user_to_job_title, ";
+    $query .= "  f.tag, ";
     $query .= "  f.message, ";
     $query .= "  f.date ";
     $query .= "FROM feedback AS f ";
@@ -161,6 +168,7 @@ class Database {
     $query .= "INNER JOIN users AS user_to ON user_to.id = f.to_user_id ";
     $query .= "WHERE f.id = ? AND (f.from_user_id = ? OR f.to_user_id = ?) ";
     $query .= "ORDER BY date DESC ";
+
     $stmt = $this->pdo->prepare($query);
     $stmt->execute([$id, $userId, $userId]);
     $rowCount = $stmt->rowCount();
@@ -193,7 +201,14 @@ class Database {
   // Group methods
   //----------------------------------------------------------------------------
   public function fetchAllGroups() {
-    $query  = "SELECT id, name, private FROM groups ORDER BY name";
+    $query  = "SELECT ";
+    $query .= "  g.id, ";
+    $query .= "  g.name, ";
+    $query .= "  g.description, ";
+    $query .= "  g.private, ";
+    $query .= "  (SELECT COUNT(*) FROM groups_members AS gm WHERE gm.group_id = g.id AND gm.approved) AS members_count ";
+    $query .= "FROM groups AS g ";
+    $query .= "ORDER BY g.name ";
     return $this->fetchAll($query);
   }
 
@@ -203,7 +218,7 @@ class Database {
   }
 
   public function fetchGroupsByName($name) {
-    $query  = "SELECT id, name, private FROM groups WHERE name LIKE ? ORDER BY name";
+    $query  = "SELECT id, name, description, private FROM groups WHERE name LIKE ? ORDER BY name";
     $stmt = $this->pdo->prepare($query);
     $stmt->execute(["%".$name."%"]);
     $rowCount = $stmt->rowCount();
@@ -215,20 +230,20 @@ class Database {
   }
 
   public function fetchOneGroup($id) {
-    $query = "SELECT id, name, private FROM groups WHERE id = ?";
+    $query = "SELECT id, name, description, private FROM groups WHERE id = ?";
     return $this->fetchOne($query, $id);
   }
 
-  public function insertGroup($name, $private) {
-    $query = "INSERT INTO groups (name, private) VALUES (?, ?)";
+  public function insertGroup($name, $description, $private) {
+    $query = "INSERT INTO groups (name, description, private) VALUES (?, ?, ?)";
     $stmt = $this->pdo->prepare($query);
-    $stmt->execute([$name, $private]);
+    $stmt->execute([$name, $description, $private]);
   }
 
-  public function updateGroup($name, $private, $id) {
-    $query = "UPDATE groups SET name = ?, private = ? WHERE id = ?";
+  public function updateGroup($name, $description, $private, $id) {
+    $query = "UPDATE groups SET name = ?, description = ?, private = ? WHERE id = ?";
     $stmt = $this->pdo->prepare($query);
-    $stmt->execute([$name, $private, $id]);
+    $stmt->execute([$name, $description, $private, $id]);
   }
 
   //----------------------------------------------------------------------------
