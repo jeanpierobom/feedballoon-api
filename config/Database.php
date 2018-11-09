@@ -121,10 +121,13 @@ class Database {
     $query .= "  user_from.firstname AS user_from_firstname, ";
     $query .= "  user_from.lastname AS user_from_lastname, ";
     $query .= "  CONCAT(user_from.firstname, ' ', user_from.lastname) AS user_from_name, ";
+    $query .= "  user_from.job_title AS user_from_job_title, ";
     $query .= "  f.to_user_id, ";
     $query .= "  user_to.firstname AS user_to_firstname, ";
     $query .= "  user_to.lastname AS user_to_lastname, ";
     $query .= "  CONCAT(user_to.firstname, ' ', user_to.lastname) AS user_to_name, ";
+    $query .= "  user_to.job_title AS user_to_job_title, ";
+    $query .= "  f.tag, ";
     $query .= "  f.message, ";
     $query .= "  f.date ";
     $query .= "FROM feedback AS f ";
@@ -168,10 +171,10 @@ class Database {
     }
   }
 
-  public function insertFeedback($fromUserId, $toUserId, $message) {
-    $query = "INSERT INTO feedback (from_user_id, to_user_id, message, date) VALUES (?, ?, ?, now())";
+  public function insertFeedback($fromUserId, $toUserId, $tag, $message) {
+    $query = "INSERT INTO feedback (from_user_id, to_user_id, tag, message, date) VALUES (?, ?, ?, ?, now())";
     $stmt = $this->pdo->prepare($query);
-    $stmt->execute([$fromUserId, $toUserId, $message]);
+    $stmt->execute([$fromUserId, $toUserId, $tag, $message]);
   }
 
   public function updateFeedback($message, $id) {

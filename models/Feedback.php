@@ -27,8 +27,8 @@ class Feedback {
   }
 
   public function insertFeedback($parameters) {
-    if (isset($parameters->fromUserId) && isset($parameters->toUserId) && isset($parameters->message)) {
-      $this->db->insertFeedback($parameters->fromUserId, $parameters->toUserId, $parameters->message);
+    if (isset($parameters->fromUserId) && isset($parameters->toUserId) && isset($parameters->tag) && isset($parameters->message)) {
+      $this->db->insertFeedback($parameters->fromUserId, $parameters->toUserId, $parameters->tag, $parameters->message);
       return $parameters;
     } else {
       return -1;

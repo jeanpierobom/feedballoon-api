@@ -57,6 +57,7 @@ CREATE TABLE `feedback` (
   `id` int(11) NOT NULL,
   `from_user_id` int(11) NOT NULL,
   `to_user_id` int(11) NOT NULL,
+  `tag` VARCHAR(30) NOT NULL,
   `message` VARCHAR(280) NOT NULL,
   `date` TIMESTAMP NOT NULL,
   FOREIGN KEY (from_user_id) REFERENCES users(id),
