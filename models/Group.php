@@ -6,9 +6,9 @@ class Group {
         $this->db = $db;
     }
 
-    public function fetchAllGroups() {
+    public function fetchAllGroups($userId) {
       $newResult = array();
-      $resultList = $this->db->fetchAllGroups();
+      $resultList = $this->db->fetchAllGroups($userId);
       foreach ($resultList as $currentGroup) {
         $nameAsList = explode(" ", $currentGroup["name"]);
         $currentGroup["name_initials"] = $nameAsList[0][0];
@@ -16,6 +16,7 @@ class Group {
           $currentGroup["name_initials"] = $currentGroup["name_initials"] . $nameAsList[sizeof($nameAsList) - 1][0];
         }
         $currentGroup["name_initials"] = strtoupper($currentGroup["name_initials"]);
+        $currentGroup["userId"] = $userId;
         array_push($newResult, $currentGroup);
       }
       return $newResult;
@@ -31,15 +32,46 @@ class Group {
 
     public function fetchOneGroup($id) {
       if (isset($id)) {
-        return $this->db->fetchOneGroup($id);
+        $group = $this->db->fetchOneGroup($id);
+        $nameAsList = explode(" ", $group["name"]);
+        $group["name_initials"] = $nameAsList[0][0];
+        if (sizeof($nameAsList) > 0) {
+          $group["name_initials"] = $group["name_initials"] . $nameAsList[sizeof($nameAsList) - 1][0];
+        }
+        $group["name_initials"] = strtoupper($group["name_initials"]);
+        return $group;
       } else {
         return -1;
       }
     }
 
+    public function fetchAllGroupMembers($groupId) {
+      $newResult = array();
+      $resultList = $this->db->fetchAllGroupMembers($groupId);
+      return $resultList;
+    }
+
     public function insertGroup($parameters) {
       if (isset($parameters->name) && isset($parameters->private)) {
         $this->db->insertGroup($parameters->name, $parameters->description, $parameters->private);
+        return $parameters;
+      } else {
+        return -1;
+      }
+    }
+
+    public function insertGroupMember($parameters) {
+      if (isset($parameters->groupId) && isset($parameters->userId)) {
+        $this->db->insertGroupMember($parameters->groupId, $parameters->userId, true);
+        return $parameters;
+      } else {
+        return -1;
+      }
+    }
+
+    public function updateGroupMember($parameters) {
+      if (isset($parameters->groupId) && isset($parameters->userId)) {
+        $this->db->updateGroupMember($parameters->groupId, $parameters->userId, false);
         return $parameters;
       } else {
         return -1;

@@ -200,21 +200,29 @@ class Database {
   //----------------------------------------------------------------------------
   // Group methods
   //----------------------------------------------------------------------------
-  public function fetchAllGroups() {
+  public function fetchAllGroups($userId) {
     $query  = "SELECT ";
     $query .= "  g.id, ";
     $query .= "  g.name, ";
     $query .= "  g.description, ";
     $query .= "  g.private, ";
-    $query .= "  (SELECT COUNT(*) FROM groups_members AS gm WHERE gm.group_id = g.id AND gm.approved) AS members_count ";
+    $query .= "  (SELECT COUNT(*) FROM groups_members AS gm WHERE gm.group_id = g.id AND gm.approved) AS members_count, ";
+    $query .= "  (SELECT COUNT(*) FROM groups_members AS gm_me WHERE gm_me.group_id = g.id AND gm_me.approved AND gm_me.user_id = ?) AS current_member ";
     $query .= "FROM groups AS g ";
     $query .= "ORDER BY g.name ";
-    return $this->fetchAll($query);
+    $stmt = $this->pdo->prepare($query);
+    $stmt->execute([$userId]);
+    $rowCount = $stmt->rowCount();
+    if ($rowCount <= 0) {
+      return 0;
+    }
+    else {
+      return $stmt->fetchAll();
+    }
   }
 
   public function fetchAllGroupsByUser($userId) {
-    //TODO filter by user
-    return $this->fetchAllGroups();
+    return $this->fetchAllGroups($userId);
   }
 
   public function fetchGroupsByName($name) {
@@ -230,8 +238,38 @@ class Database {
   }
 
   public function fetchOneGroup($id) {
-    $query = "SELECT id, name, description, private FROM groups WHERE id = ?";
+    $query  = "SELECT ";
+    $query .= "  g.id, ";
+    $query .= "  g.name, ";
+    $query .= "  g.description, ";
+    $query .= "  g.private, ";
+    $query .= "  (SELECT COUNT(*) FROM groups_members AS gm WHERE gm.group_id = g.id AND gm.approved) AS members_count ";
+    $query .= "FROM groups AS g ";
+    $query .= "WHERE g.id = ? ";
+    $query .= "ORDER BY g.name ";
     return $this->fetchOne($query, $id);
+  }
+
+  public function fetchAllGroupMembers($groupId) {
+    $query  = "SELECT ";
+    $query .= "  u.id, ";
+    $query .= "  u.firstname, ";
+    $query .= "  u.lastname, ";
+    $query .= "  CONCAT(u.firstname, ' ', u.lastname) AS name, ";
+    $query .= "  u.job_title ";
+    $query .= "FROM groups_members AS gm ";
+    $query .= "INNER JOIN users AS u ON u.id = gm.user_id ";
+    $query .= "WHERE gm.group_id = ? ";
+    $query .= "ORDER BY name ";
+    $stmt = $this->pdo->prepare($query);
+    $stmt->execute([$groupId]);
+    $rowCount = $stmt->rowCount();
+    if ($rowCount <= 0) {
+      return 0;
+    }
+    else {
+      return $stmt->fetchAll();
+    }
   }
 
   public function insertGroup($name, $description, $private) {
@@ -244,6 +282,18 @@ class Database {
     $query = "UPDATE groups SET name = ?, description = ?, private = ? WHERE id = ?";
     $stmt = $this->pdo->prepare($query);
     $stmt->execute([$name, $description, $private, $id]);
+  }
+
+  public function insertGroupMember($groupId, $userId, $approved) {
+    $query = "INSERT INTO groups_members (group_id, user_id, approved) VALUES (?, ?, ?)";
+    $stmt = $this->pdo->prepare($query);
+    $stmt->execute([$groupId, $userId, $approved]);
+  }
+
+  public function updateGroupMember($groupId, $userId, $approved) {
+    $query = "UPDATE groups_members SET approved = ? WHERE group_id = ? AND user_id = ?";
+    $stmt = $this->pdo->prepare($query);
+    $stmt->execute([$approved, $groupId, $userId]);
   }
 
   //----------------------------------------------------------------------------

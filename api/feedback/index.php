@@ -36,8 +36,8 @@ $password = $_SERVER['PHP_AUTH_PW'];
 $authResult = $auth->authenticate($username, $password);
 
 // Validate the authentication results
-if ($authResult > 0) {
-  $userId = $authResult;
+if ($authResult['id'] > 0) {
+  $userId = $authResult['id'];
 } else { // Invalid authentication
   switch ($authResult) {
     case -1:

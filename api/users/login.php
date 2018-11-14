@@ -28,12 +28,12 @@ $password = $_SERVER['PHP_AUTH_PW'];
 $authResult = $auth->authenticate($username, $password);
 
 // Validate the authentication results
-if ($authResult > 0) {
-  $userId = $authResult;
+if ($authResult['id'] > 0) {
+  $userId = $authResult['id'];
   // The password doesn't need to be sent to the client
-  $results['password'] = '';
+  $authResult['password'] = '';
   $resultsInfo = $db->executeCall($username, 1000, 86400);
-  $http->OK($resultsInfo, $results);
+  $http->OK($resultsInfo, $authResult);
 } else { // Invalid authentication
   switch ($authResult) {
     case -1:

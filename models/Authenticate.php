@@ -14,7 +14,7 @@ class Authenticate {
       if ($results === 0 || $results['password'] !== md5($password)) {
         return -2;
       } else {
-        return $results['id'];
+        return $results;
       }
     }
   }
