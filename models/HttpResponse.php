@@ -50,7 +50,8 @@ class HttpResponse {
       "data" => $resultsData,
     ]);
   }
-
-
-
+  public function OKSimple($resultsInfo, $resultsData) {
+    http_response_code(200);
+    echo json_encode($resultsData);
+  }
 }

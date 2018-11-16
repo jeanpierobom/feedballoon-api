@@ -332,7 +332,7 @@ class Database {
   // User methods
   //----------------------------------------------------------------------------
   public function fetchUsersByNameOrEmail($argument) {
-    $query = "SELECT users.id, users.username, users.firstname, users.lastname FROM users WHERE users.username LIKE ? OR CONCAT(users.firstname, ' ', users.lastname) LIKE ? ";
+    $query = "SELECT users.firstName, users.lastName, users.username FROM users WHERE users.username LIKE ? OR CONCAT(users.firstname, ' ', users.lastname) LIKE ? ";
     $stmt = $this->pdo->prepare($query);
     $stmt->execute(["%".$argument."%", "%".$argument."%"]);
     $rowCount = $stmt->rowCount();

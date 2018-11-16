@@ -48,7 +48,17 @@ class Group {
     public function fetchAllGroupMembers($groupId) {
       $newResult = array();
       $resultList = $this->db->fetchAllGroupMembers($groupId);
-      return $resultList;
+      foreach ($resultList as $currentUser) {
+        $nameAsList = explode(" ", $currentUser["name"]);
+        $currentUser["name_initials"] = $nameAsList[0][0];
+        if (sizeof($nameAsList) > 0) {
+          $currentUser["name_initials"] = $currentUser["name_initials"] . $nameAsList[sizeof($nameAsList) - 1][0];
+        }
+        $currentUser["name_initials"] = strtoupper($currentUser["name_initials"]);
+        array_push($newResult, $currentUser);
+      }
+
+      return $newResult;
     }
 
     public function insertGroup($parameters) {

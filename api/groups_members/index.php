@@ -76,7 +76,11 @@ switch ($_SERVER['REQUEST_METHOD']) {
 
     $groupMemberReceived = json_decode(file_get_contents("php://input"));
     //$groupMemberReceived = json_decode($_POST['body']);
-    $results = $group->insertGroupMember($groupMemberReceived);
+    if ($groupMemberReceived->action == 'leave') {
+      $results = $group->updateGroupMember($groupMemberReceived);
+    } else {
+      $results = $group->insertGroupMember($groupMemberReceived);
+    }
     $resultsInfo = $db->executeCall($username, 1000, 86400);
     if ($results === -1) {
       $http->badRequest("A valid JSON of fields is required");
@@ -88,16 +92,4 @@ switch ($_SERVER['REQUEST_METHOD']) {
     break;
 
   case "PUT":
-    $groupMemberReceived = json_decode(file_get_contents("php://input"));
-    //$groupMemberReceived = json_decode($_POST['body']);
-    $results = $group->updateGroupMember($groupMemberReceived);
-    $resultsInfo = $db->executeCall($username, 1000, 86400);
-    if ($results === -1) {
-      $http->badRequest("A valid JSON of fields is required");
-    }else if($resultsInfo === -1) {
-      $http->paymentRequired();
-    }else {
-      $http->OK($resultsInfo, $results);
-    }
-    break;
 }
