@@ -58,10 +58,14 @@ switch ($_SERVER['REQUEST_METHOD']) {
       $resultsData = $user->fetchUsersByNameOrEmail($_GET['q'], $userId);
       // Deal with the results
       $resultsInfo = $db->executeCall($username, 1000, 86400);
-      $http->OKSimple($resultsInfo, $resultsData);
+      // $http->OKSimple($resultsInfo, $resultsData);
     } else {
-      $http->OKSimple("", "");
+      // Fetch all users
+      $resultsData = $user->fetchAllUsers();
+      // $http->OKSimple("", "");
     }
+    $resultsData = $_GET['callback'] . "(" . json_encode($resultsData) . ")";
+    $http->OKSimple($resultsInfo, $resultsData);
 
 
     break;

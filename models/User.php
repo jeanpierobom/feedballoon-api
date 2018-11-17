@@ -39,15 +39,17 @@ class User {
       $resultList = $this->db->fetchUsersByNameOrEmail($parameter);
       $str = "";
       foreach ($resultList as $currentuser) {
-        $str = $currentuser['firstName'] . " " . $currentuser['lastName'] . " (" . $currentuser['username'] . ")";
-        // $nameAsList = explode(" ", $currentGroup["name"]);
-        // $currentGroup["name_initials"] = $nameAsList[0][0];
-        // if (sizeof($nameAsList) > 0) {
-        //   $currentGroup["name_initials"] = $currentGroup["name_initials"] . $nameAsList[sizeof($nameAsList) - 1][0];
-        // }
-        // $currentGroup["name_initials"] = strtoupper($currentGroup["name_initials"]);
-        // $currentGroup["userId"] = $userId;
-        array_push($newResult, $str);
+        // $str = $currentuser['firstName'] . " " . $currentuser['lastName'] . " (" . $currentuser['username'] . ")";
+        // array_push($newResult, $str);
+
+        $nameAsList = explode(" ", $currentuser["name"]);
+        $currentuser["name_initials"] = $nameAsList[0][0];
+        if (sizeof($nameAsList) > 0) {
+          $currentuser["name_initials"] = $currentuser["name_initials"] . $nameAsList[sizeof($nameAsList) - 1][0];
+        }
+        $currentuser["name_initials"] = strtoupper($currentuser["name_initials"]);
+        $currentuser["userId"] = $userId;
+        array_push($newResult, $currentuser);
       }
       return $newResult;
 

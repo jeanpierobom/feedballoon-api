@@ -52,6 +52,13 @@ class HttpResponse {
   }
   public function OKSimple($resultsInfo, $resultsData) {
     http_response_code(200);
-    echo json_encode($resultsData);
+    //echo json_encode($resultsData);
+    echo $resultsData;
+
+    // echo json_encode([
+    //   "date_time" => date("d/m/Y h:i:s:a"),
+    //   "version" => "1.0.0",
+    //   "data" => $resultsData,
+    // ]);
   }
 }
