@@ -19,6 +19,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
   exit(0);
 }
 
+require_once "../../config/Database.php";
+require_once "../../models/User.php";
+require_once "../../models/HttpResponse.php";
+require_once "../../models/Authenticate.php";
+
 $db = new Database();
 $http = new HttpResponse();
 $user = new User($db);
