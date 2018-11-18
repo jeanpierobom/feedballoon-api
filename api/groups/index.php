@@ -61,11 +61,11 @@ switch ($_SERVER['REQUEST_METHOD']) {
 
     // Fetch one group by ID, or all if there is no ID
     if (isset($_GET['id'])) { // Filter by ID
-      $resultsData = $group->fetchOneGroup($_GET['id']);
+      $resultsData = $group->fetchOneGroup($_GET['id'], $userId);
     }
 
     else if (isset($_GET['name'])) { // Filter by name
-      $resultsData = $group->fetchGroupsByName($_GET['name']);
+      $resultsData = $group->fetchGroupsByName($_GET['name'], $userId);
     }
 
     else { // Fetch all
@@ -90,7 +90,7 @@ switch ($_SERVER['REQUEST_METHOD']) {
   case "POST":
 
     $groupReceived = json_decode(file_get_contents("php://input"));
-    $results = $group->insertGroup($groupReceived);
+    $results = $group->insertGroup($groupReceived, $userId);
     $resultsInfo = $db->executeCall($username, 1000, 86400);
     if ($results === -1) {
       $http->badRequest("A valid JSON of fields is required");

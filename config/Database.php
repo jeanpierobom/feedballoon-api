@@ -237,17 +237,26 @@ class Database {
     }
   }
 
-  public function fetchOneGroup($id) {
+  public function fetchOneGroup($id, $userId) {
     $query  = "SELECT ";
     $query .= "  g.id, ";
     $query .= "  g.name, ";
     $query .= "  g.description, ";
     $query .= "  g.private, ";
-    $query .= "  (SELECT COUNT(*) FROM groups_members AS gm WHERE gm.group_id = g.id AND gm.approved) AS members_count ";
+    $query .= "  (SELECT COUNT(*) FROM groups_members AS gm WHERE gm.group_id = g.id AND gm.approved) AS members_count, ";
+    $query .= "  (SELECT COUNT(*) FROM groups_members AS gm_admin WHERE gm_admin.group_id = g.id AND gm_admin.admin AND gm_admin.user_id = ?) AS logged_user_is_admin ";
     $query .= "FROM groups AS g ";
     $query .= "WHERE g.id = ? ";
     $query .= "ORDER BY g.name ";
-    return $this->fetchOne($query, $id);
+    $stmt = $this->pdo->prepare($query);
+    $stmt->execute([$userId, $id]);
+    $rowCount = $stmt->rowCount();
+    if ($rowCount <= 0) {
+      return 0;
+    }
+    else {
+      return $stmt->fetch();
+    }
   }
 
   public function fetchAllGroupMembers($groupId) {
@@ -256,7 +265,9 @@ class Database {
     $query .= "  u.firstname, ";
     $query .= "  u.lastname, ";
     $query .= "  CONCAT(u.firstname, ' ', u.lastname) AS name, ";
-    $query .= "  u.job_title ";
+    $query .= "  u.job_title, ";
+    $query .= "  gm.approved, ";
+    $query .= "  gm.admin ";
     $query .= "FROM groups_members AS gm ";
     $query .= "INNER JOIN users AS u ON u.id = gm.user_id ";
     $query .= "WHERE gm.group_id = ? ";
@@ -276,6 +287,7 @@ class Database {
     $query = "INSERT INTO groups (name, description, private) VALUES (?, ?, ?)";
     $stmt = $this->pdo->prepare($query);
     $stmt->execute([$name, $description, $private]);
+    return $this->pdo->lastInsertId();
   }
 
   public function updateGroup($name, $description, $private, $id) {
@@ -284,10 +296,10 @@ class Database {
     $stmt->execute([$name, $description, $private, $id]);
   }
 
-  public function insertGroupMember($groupId, $userId, $approved) {
-    $query = "INSERT INTO groups_members (group_id, user_id, approved) VALUES (?, ?, ?)";
+  public function insertGroupMember($groupId, $userId, $approved, $admin) {
+    $query = "INSERT INTO groups_members (group_id, user_id, approved, admin) VALUES (?, ?, ?, ?)";
     $stmt = $this->pdo->prepare($query);
-    $stmt->execute([$groupId, $userId, $approved]);
+    $stmt->execute([$groupId, $userId, $approved, $admin]);
   }
 
   public function updateGroupMember($groupId, $userId, $approved) {

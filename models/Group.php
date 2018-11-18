@@ -30,9 +30,9 @@ class Group {
       return $this->db->fetchGroupsByName($name);
     }
 
-    public function fetchOneGroup($id) {
+    public function fetchOneGroup($id, $userId) {
       if (isset($id)) {
-        $group = $this->db->fetchOneGroup($id);
+        $group = $this->db->fetchOneGroup($id, $userId);
         $nameAsList = explode(" ", $group["name"]);
         $group["name_initials"] = $nameAsList[0][0];
         if (sizeof($nameAsList) > 0) {
@@ -61,9 +61,10 @@ class Group {
       return $newResult;
     }
 
-    public function insertGroup($parameters) {
+    public function insertGroup($parameters, $userId) {
       if (isset($parameters->name) && isset($parameters->private)) {
-        $this->db->insertGroup($parameters->name, $parameters->description, $parameters->private);
+        $groupId = $this->db->insertGroup($parameters->name, $parameters->description, $parameters->private);
+        $this->db->insertGroupMember($groupId, $userId, true, true);
         return $parameters;
       } else {
         return -1;
@@ -72,7 +73,7 @@ class Group {
 
     public function insertGroupMember($parameters) {
       if (isset($parameters->groupId) && isset($parameters->userId)) {
-        $this->db->insertGroupMember($parameters->groupId, $parameters->userId, true);
+        $this->db->insertGroupMember($parameters->groupId, $parameters->userId, false, false);
         return $parameters;
       } else {
         return -1;
