@@ -4,7 +4,7 @@ class Database {
   private $hostName = "localhost";
   private $dbname = "feedballoon";
   private $username = "root";
-  private $password = "root";
+  private $password = "flying2018!";
   private $pdo;
 
   // Start Connection
@@ -105,6 +105,28 @@ class Database {
   }
 
   //---------------------------------
+  public function fetchOneUser($id) {
+    $query  = "SELECT ";
+    $query .= "  u.id, ";
+    $query .= "  u.username, ";
+    $query .= "  u.firstname, ";
+    $query .= "  u.lastname, ";
+    $query .= "  CONCAT(u.firstname, ' ', u.lastname) AS name, ";
+    $query .= "  u.job_title ";
+    $query .= "FROM users AS u ";
+    $query .= "WHERE u.id = ? ";
+    $query .= "ORDER BY u.firstname ";
+    $stmt = $this->pdo->prepare($query);
+    $stmt->execute([$id]);
+    $rowCount = $stmt->rowCount();
+    if ($rowCount <= 0) {
+      return 0;
+    }
+    else {
+      return $stmt->fetch();
+    }
+  }
+
   public function fetchOneUserByUsername($username) {
     $query = "SELECT * FROM users WHERE username = ?";
     return $this->fetchOne($query, $username);

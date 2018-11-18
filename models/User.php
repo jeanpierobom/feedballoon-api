@@ -29,9 +29,13 @@ class User {
       return $this->db->fetchAll($query);
   }
 
-  public function fetchOneUser($parameter) {
-      $query = "SELECT users.id, users.username FROM users WHERE users.id = ?";
-      return $this->db->fetchOne($query, $parameter);
+  public function fetchOneUser($id) {
+    if (isset($id)) {
+      $user = $this->db->fetchOneUser($id);
+      return $user;
+    } else {
+      return -1;
+    }
   }
 
   public function fetchUsersByNameOrEmail($parameter) {

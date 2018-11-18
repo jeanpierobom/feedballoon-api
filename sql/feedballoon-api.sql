@@ -16,11 +16,6 @@ CREATE TABLE `users` (
   `time_end` varchar(255) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
-INSERT INTO `users` (`id`, `firstName`, `lastName`, `username`, `password`, `plan`, `calls_made`, `time_start`, `time_end`) VALUES
-(1, 'First', 'Last', 'test@test.com', 'test123', 'unlimited', 0, '0', '0'),
-(2, 'John', 'Smith', 'johnsmith@test.com', 'test123', 'unlimited', 0, '0', '0'),
-(3, 'Mary', 'Anne', 'mary@test.com', 'test123', 'unlimited', 0, '0', '0');
-
 ALTER TABLE `users` ADD PRIMARY KEY (`id`);
 
 ALTER TABLE `users` MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
@@ -46,6 +41,8 @@ CREATE TABLE `groups_members` (
   `group_id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
   `approved` TINYINT(1) NOT NULL,
+  `admin` TINYINT(1) NOT NULL,
+  `active` TINYINT(1) NOT NULL,
   FOREIGN KEY (group_id) REFERENCES groups(id),
   FOREIGN KEY (user_id) REFERENCES users(id)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
