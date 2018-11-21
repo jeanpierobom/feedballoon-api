@@ -46,13 +46,16 @@ class User {
     }
   }
 
-  public function fetchUsersByNameOrEmail($parameter) {
+  public function fetchUsersByNameOrEmail($parameter, $user) {
       $newResult = array();
       $resultList = $this->db->fetchUsersByNameOrEmail($parameter);
       $str = "";
       foreach ($resultList as $currentuser) {
-        // $str = $currentuser['firstName'] . " " . $currentuser['lastName'] . " (" . $currentuser['username'] . ")";
-        // array_push($newResult, $str);
+
+        // Dont retrieve the current logged user
+        if ($user["id"] == $currentuser["id"]) {
+          continue;
+        }
 
         $nameAsList = explode(" ", $currentuser["name"]);
         $currentuser["name_initials"] = $nameAsList[0][0];
@@ -60,7 +63,7 @@ class User {
           $currentuser["name_initials"] = $currentuser["name_initials"] . $nameAsList[sizeof($nameAsList) - 1][0];
         }
         $currentuser["name_initials"] = strtoupper($currentuser["name_initials"]);
-        $currentuser["userId"] = $userId;
+        $currentuser["userId"] = $user["id"];
         array_push($newResult, $currentuser);
       }
       return $newResult;

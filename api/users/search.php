@@ -35,6 +35,10 @@ $username = $_SERVER['PHP_AUTH_USER'];
 $password = $_SERVER['PHP_AUTH_PW'];
 $authResult = $auth->authenticate($username, $password);
 
+if ($authResult['id'] > 0) {
+  $userId = $authResult['id'];
+}
+
 // Validate the authentication results
 // if ($authResult > 0) {
 //   $userId = $authResult;
