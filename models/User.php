@@ -32,6 +32,14 @@ class User {
   public function fetchOneUser($id) {
     if (isset($id)) {
       $user = $this->db->fetchOneUser($id);
+
+      $nameAsList = explode(" ", $user["name"]);
+      $user["name_initials"] = $nameAsList[0][0];
+      if (sizeof($nameAsList) > 0) {
+        $user["name_initials"] = $user["name_initials"] . $nameAsList[sizeof($nameAsList) - 1][0];
+      }
+      $user["name_initials"] = strtoupper($user["name_initials"]);
+
       return $user;
     } else {
       return -1;

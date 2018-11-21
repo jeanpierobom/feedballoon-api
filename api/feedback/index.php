@@ -77,7 +77,9 @@ switch ($_SERVER['REQUEST_METHOD']) {
   case "POST":
 
     $feedbackReceived = json_decode(file_get_contents("php://input"));
-    //$feedbackReceived = json_decode($_POST["body"]);
+    if (!isset($feedbackReceived)) {
+      $feedbackReceived = json_decode($_POST["body"]);
+    }
     $results = $feedback->insertFeedback($feedbackReceived);
     $resultsInfo = $db->executeCall($username, 1000, 86400);
     if ($results === -1) {
