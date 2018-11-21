@@ -4,8 +4,8 @@ class Database {
   private $hostName = "localhost";
   private $dbname = "feedballoon";
   private $username = "root";
-  private $password = "flying2018!";
-  //private $password = "root";
+  //private $password = "flying2018!";
+  private $password = "root";
   private $pdo;
 
   // Start Connection
