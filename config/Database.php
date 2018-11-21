@@ -229,12 +229,13 @@ class Database {
     $query .= "  g.name, ";
     $query .= "  g.description, ";
     $query .= "  g.private, ";
-    $query .= "  (SELECT COUNT(*) FROM groups_members AS gm WHERE gm.group_id = g.id AND gm.approved) AS members_count, ";
-    $query .= "  (SELECT COUNT(*) FROM groups_members AS gm_me WHERE gm_me.group_id = g.id AND gm_me.approved AND gm_me.user_id = ?) AS current_member ";
+    $query .= "  (SELECT COUNT(*) FROM groups_members AS gm WHERE gm.group_id = g.id AND gm.approved AND gm.active) AS members_count, ";
+    $query .= "  (SELECT COUNT(*) FROM groups_members AS gm_me WHERE gm_me.group_id = g.id AND NOT gm_me.approved AND gm_me.user_id = ? AND gm_me.active) AS current_member_waiting, ";
+    $query .= "  (SELECT COUNT(*) FROM groups_members AS gm_me_1 WHERE gm_me_1.group_id = g.id AND gm_me_1.approved AND gm_me_1.user_id = ? AND gm_me_1.active) AS current_member_approved ";
     $query .= "FROM groups AS g ";
     $query .= "ORDER BY g.name ";
     $stmt = $this->pdo->prepare($query);
-    $stmt->execute([$userId]);
+    $stmt->execute([$userId, $userId]);
     $rowCount = $stmt->rowCount();
     if ($rowCount <= 0) {
       return 0;
@@ -266,13 +267,15 @@ class Database {
     $query .= "  g.name, ";
     $query .= "  g.description, ";
     $query .= "  g.private, ";
-    $query .= "  (SELECT COUNT(*) FROM groups_members AS gm WHERE gm.group_id = g.id AND gm.approved) AS members_count, ";
-    $query .= "  (SELECT COUNT(*) FROM groups_members AS gm_admin WHERE gm_admin.group_id = g.id AND gm_admin.admin AND gm_admin.user_id = ?) AS logged_user_is_admin ";
+    $query .= "  (SELECT COUNT(*) FROM groups_members AS gm WHERE gm.group_id = g.id AND gm.approved AND gm.active) AS members_count, ";
+    $query .= "  (SELECT COUNT(*) FROM groups_members AS gm_me_1 WHERE gm_me_1.group_id = g.id AND NOT gm_me_1.approved AND gm_me_1.user_id = ? AND gm_me_1.active) AS current_member_waiting, ";
+    $query .= "  (SELECT COUNT(*) FROM groups_members AS gm_me_2 WHERE gm_me_2.group_id = g.id AND gm_me_2.approved AND gm_me_2.user_id = ? AND gm_me_2.active) AS current_member_approved, ";
+    $query .= "  (SELECT COUNT(*) FROM groups_members AS gm_admin WHERE gm_admin.group_id = g.id AND gm_admin.admin AND gm_admin.user_id = ? AND gm_admin.active) AS logged_user_is_admin ";
     $query .= "FROM groups AS g ";
     $query .= "WHERE g.id = ? ";
     $query .= "ORDER BY g.name ";
     $stmt = $this->pdo->prepare($query);
-    $stmt->execute([$userId, $id]);
+    $stmt->execute([$userId, $userId, $userId, $id]);
     $rowCount = $stmt->rowCount();
     if ($rowCount <= 0) {
       return 0;
@@ -293,7 +296,7 @@ class Database {
     $query .= "  gm.admin ";
     $query .= "FROM groups_members AS gm ";
     $query .= "INNER JOIN users AS u ON u.id = gm.user_id ";
-    $query .= "WHERE gm.group_id = ? ";
+    $query .= "WHERE gm.active AND gm.group_id = ? ";
     $query .= "ORDER BY name ";
     $stmt = $this->pdo->prepare($query);
     $stmt->execute([$groupId]);
@@ -319,16 +322,28 @@ class Database {
     $stmt->execute([$name, $description, $private, $id]);
   }
 
-  public function insertGroupMember($groupId, $userId, $approved, $admin) {
-    $query = "INSERT INTO groups_members (group_id, user_id, approved, admin) VALUES (?, ?, ?, ?)";
+  public function insertGroupMember($groupId, $userId, $approved, $admin, $active) {
+    $query = "INSERT INTO groups_members (group_id, user_id, approved, admin, active) VALUES (?, ?, ?, ?, ?)";
     $stmt = $this->pdo->prepare($query);
-    $stmt->execute([$groupId, $userId, $approved, $admin]);
+    $stmt->execute([$groupId, $userId, $approved, $admin, $active]);
   }
 
-  public function updateGroupMember($groupId, $userId, $approved) {
-    $query = "UPDATE groups_members SET approved = ? WHERE group_id = ? AND user_id = ?";
+  // public function updateGroupMember($groupId, $userId) {
+  //   $query = "UPDATE groups_members SET approved = ? WHERE group_id = ? AND user_id = ?";
+  //   $stmt = $this->pdo->prepare($query);
+  //   $stmt->execute([$groupId, $userId]);
+  // }
+
+  public function acceptGroupMember($groupId, $userId) {
+    $query = "UPDATE groups_members SET approved = true WHERE group_id = ? AND user_id = ?";
     $stmt = $this->pdo->prepare($query);
-    $stmt->execute([$approved, $groupId, $userId]);
+    $stmt->execute([$groupId, $userId]);
+  }
+
+  public function declineGroupMember($groupId, $userId) {
+    $query = "UPDATE groups_members SET approved = false, active = false WHERE group_id = ? AND user_id = ?";
+    $stmt = $this->pdo->prepare($query);
+    $stmt->execute([$groupId, $userId]);
   }
 
   //----------------------------------------------------------------------------

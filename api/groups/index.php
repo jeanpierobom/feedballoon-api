@@ -90,6 +90,9 @@ switch ($_SERVER['REQUEST_METHOD']) {
   case "POST":
 
     $groupReceived = json_decode(file_get_contents("php://input"));
+    if (!isset($groupReceived)) {
+      $groupReceived = json_decode($_POST["body"]);
+    }
     $results = $group->insertGroup($groupReceived, $userId);
     $resultsInfo = $db->executeCall($username, 1000, 86400);
     if ($results === -1) {

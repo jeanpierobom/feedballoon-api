@@ -64,7 +64,7 @@ class Group {
     public function insertGroup($parameters, $userId) {
       if (isset($parameters->name) && isset($parameters->private)) {
         $groupId = $this->db->insertGroup($parameters->name, $parameters->description, $parameters->private);
-        $this->db->insertGroupMember($groupId, $userId, true, true);
+        $this->db->insertGroupMember($groupId, $userId, true, true, true);
         return $parameters;
       } else {
         return -1;
@@ -73,16 +73,34 @@ class Group {
 
     public function insertGroupMember($parameters) {
       if (isset($parameters->groupId) && isset($parameters->userId)) {
-        $this->db->insertGroupMember($parameters->groupId, $parameters->userId, false, false);
+        $this->db->insertGroupMember($parameters->groupId, $parameters->userId, false, false, true);
         return $parameters;
       } else {
         return -1;
       }
     }
 
-    public function updateGroupMember($parameters) {
+    // public function updateGroupMember($parameters) {
+    //   if (isset($parameters->groupId) && isset($parameters->userId)) {
+    //     $this->db->updateGroupMember($parameters->groupId, $parameters->userId);
+    //     return $parameters;
+    //   } else {
+    //     return -1;
+    //   }
+    // }
+
+    public function acceptGroupMember($parameters) {
       if (isset($parameters->groupId) && isset($parameters->userId)) {
-        $this->db->updateGroupMember($parameters->groupId, $parameters->userId, false);
+        $this->db->acceptGroupMember($parameters->groupId, $parameters->userId);
+        return $parameters;
+      } else {
+        return -1;
+      }
+    }
+
+    public function declineGroupMember($parameters) {
+      if (isset($parameters->groupId) && isset($parameters->userId)) {
+        $this->db->declineGroupMember($parameters->groupId, $parameters->userId);
         return $parameters;
       } else {
         return -1;

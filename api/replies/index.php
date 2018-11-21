@@ -84,7 +84,10 @@ switch ($_SERVER['REQUEST_METHOD']) {
 
   case "POST":
 
-    $replyReceived = json_decode($_POST['body']);
+    $replyReceived = json_decode(file_get_contents("php://input"));
+    if (!isset($replyReceived)) {
+      $replyReceived = json_decode($_POST["body"]);
+    }
     $results = $reply->insertReply($replyReceived);
     $resultsInfo = $db->executeCall($username, 1000, 86400);
     if ($results === -1) {

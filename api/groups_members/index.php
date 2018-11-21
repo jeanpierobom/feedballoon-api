@@ -75,9 +75,13 @@ switch ($_SERVER['REQUEST_METHOD']) {
   case "POST":
 
     $groupMemberReceived = json_decode(file_get_contents("php://input"));
-    //$groupMemberReceived = json_decode($_POST['body']);
-    if ($groupMemberReceived->action == 'leave') {
-      $results = $group->updateGroupMember($groupMemberReceived);
+    if (!isset($groupMemberReceived)) {
+      $groupMemberReceived = json_decode($_POST["body"]);
+    }
+    if ($groupMemberReceived->action == 'decline' || $groupMemberReceived->action == 'leave') {
+      $results = $group->declineGroupMember($groupMemberReceived);
+    } else if ($groupMemberReceived->action == 'accept') {
+      $results = $group->acceptGroupMember($groupMemberReceived);
     } else {
       $results = $group->insertGroupMember($groupMemberReceived);
     }
