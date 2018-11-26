@@ -24,6 +24,10 @@ class Feedback {
       $resultFeedback["user_from_initials"] = $resultFeedback["user_from_firstname"][0] . $resultFeedback["user_from_lastname"][0];
       $resultFeedback["user_to_initials"] = $resultFeedback["user_to_firstname"][0] . $resultFeedback["user_to_lastname"][0];
       $resultFeedback["type"] = $resultFeedback["from_user_id"] == $userId ? "sent" : "received";
+
+      $repliesList = $this->db->fetchAllFeedbackReplies($id);
+      $resultFeedback["replies"] = $repliesList;
+
       return $resultFeedback;
     } else {
       return -1;
@@ -55,6 +59,11 @@ class Feedback {
     } else {
       return -1;
     }
+  }
+
+  public function fetchAllFeedbackReplies($feedbackId) {
+    $resultList = $this->db->fetchAllFeedbackReplies($feedbackId);
+    return $resultList;
   }
 
   public function deleteFeedback($id) {

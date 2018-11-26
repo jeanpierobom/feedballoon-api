@@ -226,6 +226,31 @@ class Database {
     $stmt->execute([$id]);
   }
 
+  public function fetchAllFeedbackReplies($feedbackId) {
+    $query  = "SELECT ";
+    $query .= "  fr.message, ";
+    $query .= "  fr.date, ";
+    $query .= "  fr.user_id, ";
+    $query .= "  user_from.firstname AS user_from_firstname, ";
+    $query .= "  user_from.lastname AS user_from_lastname, ";
+    $query .= "  CONCAT(user_from.firstname, ' ', user_from.lastname) AS user_from_name, ";
+    $query .= "  user_from.job_title AS user_from_job_title ";
+    $query .= "FROM feedback_reply AS fr ";
+    $query .= "INNER JOIN users AS user_from ON user_from.id = fr.user_id ";
+    $query .= "WHERE fr.feedback_id = ? ";
+    $query .= "ORDER BY date DESC ";
+
+    $stmt = $this->pdo->prepare($query);
+    $stmt->execute([$feedbackId]);
+    $rowCount = $stmt->rowCount();
+    if ($rowCount <= 0) {
+      return 0;
+    }
+    else {
+      return $stmt->fetchAll();
+    }
+  }
+
   //----------------------------------------------------------------------------
   // Group methods
   //----------------------------------------------------------------------------
