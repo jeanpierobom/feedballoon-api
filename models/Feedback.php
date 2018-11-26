@@ -39,6 +39,15 @@ class Feedback {
     }
   }
 
+  public function insertFeedbackReply($parameters) {
+    if (isset($parameters->feedbackId) && isset($parameters->userId) && isset($parameters->message)) {
+      $this->db->insertFeedbackReply($parameters->feedbackId, $parameters->userId, $parameters->message);
+      return $parameters;
+    } else {
+      return -1;
+    }
+  }
+
   public function updateFeedback($parameters) {
     if (isset($parameters['message']) && isset($parameters['id'])) {
       $this->db->updateFeedback($parameters['message'], $parameters['id']);

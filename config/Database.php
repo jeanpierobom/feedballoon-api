@@ -208,6 +208,12 @@ class Database {
     $stmt->execute([$fromUserId, $toUserId, $tag, $message]);
   }
 
+  public function insertFeedbackReply($feedbackId, $userId, $message) {
+    $query = "INSERT INTO feedback_reply (feedback_id, user_id, message, date) VALUES (?, ?, ?, now())";
+    $stmt = $this->pdo->prepare($query);
+    $stmt->execute([$feedbackId, $userId, $message]);
+  }
+
   public function updateFeedback($message, $id) {
     $query = "UPDATE feedback SET message = ? WHERE id = ?";
     $stmt = $this->pdo->prepare($query);
