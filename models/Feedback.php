@@ -26,8 +26,12 @@ class Feedback {
       $resultFeedback["type"] = $resultFeedback["from_user_id"] == $userId ? "sent" : "received";
 
       $repliesList = $this->db->fetchAllFeedbackReplies($id);
-      $resultFeedback["replies"] = $repliesList;
-
+      $newResult = array();
+      foreach ($repliesList as $currentReply) {
+        $currentReply["user_from_initials"] = $currentReply["user_from_firstname"][0] . $currentReply["user_from_lastname"][0];
+        array_push($newResult, $currentReply);
+      }
+      $resultFeedback["replies"] = $newResult;
       return $resultFeedback;
     } else {
       return -1;

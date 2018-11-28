@@ -152,7 +152,8 @@ class Database {
     $query .= "  user_to.job_title AS user_to_job_title, ";
     $query .= "  f.tag, ";
     $query .= "  f.message, ";
-    $query .= "  f.date ";
+    $query .= "  f.date, ";
+    $query .= "  (SELECT COUNT(*) FROM feedback_reply AS fr WHERE fr.feedback_id = f.id AND fr.user_id = ?) AS user_replies ";
     $query .= "FROM feedback AS f ";
     $query .= "INNER JOIN users AS user_from ON user_from.id = f.from_user_id ";
     $query .= "INNER JOIN users AS user_to ON user_to.id = f.to_user_id ";
@@ -160,7 +161,7 @@ class Database {
     $query .= "ORDER BY date DESC ";
 
     $stmt = $this->pdo->prepare($query);
-    $stmt->execute([$userId, $userId]);
+    $stmt->execute([$userId, $userId, $userId]);
     $rowCount = $stmt->rowCount();
     if ($rowCount <= 0) {
       return 0;
