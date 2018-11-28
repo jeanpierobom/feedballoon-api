@@ -422,6 +422,7 @@ class Database {
     $query .= "  u.lastname, ";
     $query .= "  CONCAT(u.firstname, ' ', u.lastname) AS name, ";
     $query .= "  CONCAT(u.firstname, ' ', u.lastname) AS label, ";
+    // $query .= "  CONCAT(u.firstname, ' ', u.lastname, ' (', u.username, ')') AS label, ";
     $query .= "  u.job_title ";
     $query .= "FROM users AS u ";
     $query .= "WHERE u.username LIKE ? ";
