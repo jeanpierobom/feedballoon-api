@@ -24,6 +24,17 @@ class User {
     }
   }
 
+  public function changeUserPassword($userId, $password) {
+    if (isset($userId) && isset($password)) {
+      $this->db->changeUserPassword($userId, $password);
+      return [
+        "userId" => $userId
+      ];
+    }else {
+      return -1;
+    }
+  }
+
   public function fetchAllUsers() {
       $query = "SELECT users.id, users.username FROM users ORDER BY users.username";
       return $this->db->fetchAll($query);

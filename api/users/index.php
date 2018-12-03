@@ -85,6 +85,9 @@ switch ($_SERVER['REQUEST_METHOD']) {
   case "POST":
 
     $userReceived = json_decode(file_get_contents("php://input"));
+    if (!isset($userReceived)) {
+      $userReceived = json_decode($_POST["body"]);
+    }
 
     // Check if the user already exists
     $existingUser = $db->fetchOneUserByUsername($userReceived->username);

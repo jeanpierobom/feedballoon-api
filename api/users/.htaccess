@@ -1,5 +1,6 @@
 RewriteEngine on
 RewriteRule ^login/([A-Za-z0-9]+)$ login.php?number=$1
+RewriteRule ^change-password change-password.php
 RewriteRule ^login login.php
 RewriteRule ^search search.php
 RewriteRule ^([A-Za-z0-9]+)$ index.php?argument=$1
